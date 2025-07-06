@@ -1,0 +1,36 @@
+---
+services:
+  api:
+    build:
+      context: .
+    image: fitch-api:${CI_COMMIT_REF_SLUG:-develop}
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./src/:/app/src/
+      - type: tmpfs
+        target: /prometheus_metrics
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: fitch-prometheus
+    ports:
+      - 127.0.0.1:9090:9090
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    ports:
+      - 127.0.0.1:3000:3000
+    volumes:
+      - fitch-grafana-data:/var/lib/grafana
+
+volumes:
+  fitch-grafana-data:
+    name: fitch-grafana-data
