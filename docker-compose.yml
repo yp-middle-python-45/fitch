@@ -4,6 +4,7 @@ services:
     build:
       context: .
     image: fitch-api:${CI_COMMIT_REF_SLUG:-develop}
+    hostname: fitch-api
     restart: unless-stopped
     ports:
       - "8000:8000"
@@ -21,8 +22,7 @@ services:
       - 127.0.0.1:9090:9090
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
+    command: --config.file=/etc/prometheus/prometheus.yml
 
   grafana:
     image: grafana/grafana:11.3.0
